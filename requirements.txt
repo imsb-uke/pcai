@@ -1,0 +1,6 @@
+ipykernel
+matplotlib
+
+# --- Loading ---
+openslide-python==1.2.0          # for reading whole slide images
+opencv-python-headless 

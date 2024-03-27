@@ -1,0 +1,4 @@
+build-essential
+openslide-tools
+python3-openslide
+libgl1

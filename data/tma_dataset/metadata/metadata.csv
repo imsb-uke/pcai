@@ -1,0 +1,4 @@
+patient_id,event_duration,event_indicator
+000,100,0
+001,50,1
+002,20,1
