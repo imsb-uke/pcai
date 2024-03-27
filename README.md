@@ -12,6 +12,11 @@ demonstrated in [patch_loader.ipynb](notebook/patch_loader.ipynb)
 Simple library to load patches of a slide. Example:
 ![image](notebook/output/patch_loader_example.png)
 
+## Build a Data Loader
+TODO
+
+## Train a Model
+TODO
 
 ## How to run
 
