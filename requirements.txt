@@ -1,5 +1,7 @@
 ipykernel
 matplotlib
+numpy
+pandas
 
 # --- Loading ---
 openslide-python==1.2.0          # for reading whole slide images
