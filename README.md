@@ -12,6 +12,15 @@ demonstrated in [patch_loader.ipynb](notebook/patch_loader.ipynb)
 Simple library to load patches of a slide. Example:
 ![image](notebook/output/patch_loader_example.png)
 
+## Masking
+TODO
+
+## Prepare a slide
+TODO
+
+## Build a Dataset
+TODO
+
 ## Build a Data Loader
 TODO
 

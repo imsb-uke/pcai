@@ -1,3 +1,5 @@
+torch==1.13.1
+
 ipykernel
 matplotlib
 numpy
