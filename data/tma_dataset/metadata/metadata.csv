@@ -1,4 +1,4 @@
-patient_id,event_duration,event_indicator
-0,100,0
-1,50,1
-2,20,1
+patient_id,event_duration,event_indicator,domain
+0,100,0,A
+1,50,1,B
+2,20,1,C
