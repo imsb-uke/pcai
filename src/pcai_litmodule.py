@@ -142,8 +142,10 @@ class LitModuleClasAdversarial(LightningModule):
         x_hat_clas, x_hat_adv = self.forward(x)
 
         return {
-            "x": {"clas": x_hat_clas, "adv": x_hat_adv},
-            "y": {"clas": y_clas, "adv": y_adv},
+            "x_hat_clas": x_hat_clas,
+            "x_hat_adv": x_hat_adv,
+            "y_clas": y_clas, 
+            "y_adv": y_adv,
         } | data_meta
 
     def configure_optimizers(self):
