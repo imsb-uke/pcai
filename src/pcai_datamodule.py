@@ -38,7 +38,7 @@ class PatchDataModule(LightningDataModule):
     def __init__(
         self,
         metadata_path: str = '../data/tma_dataset/metadata/metadata.csv',
-        batch_size: int = 1,
+        batch_size: int = 2,
         num_workers: int = 0,
         pin_memory: bool = False,
         **dataset_kwargs,

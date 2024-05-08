@@ -45,40 +45,39 @@ class LitModuleClasAdversarial(LightningModule):
     def forward(self, x: torch.Tensor):
         return self.net(x)
 
-    def _step(self, logits, targets, criterion):
-        loss = criterion(logits, targets)
+    def _step(self, x_hat, y, criterion):
+        loss = criterion(x_hat, y)
 
-        preds = torch.argmax(logits, dim=1)
-        probs = torch.softmax(logits, dim=1)
+        preds = torch.argmax(x_hat, dim=1)
+        probs = torch.softmax(x_hat, dim=1)
 
         return loss, preds, probs
 
     def step(self, batch: Any, mode: str):
-        x, y, *args = batch
+        x, y_clas, y_adv, *args = batch
 
-        logits_bin_clas, logits_adv = self.forward(x)
-        targets_bin_clas, targets_adv = y[:, 0], y[:, 1]
+        x_hat_clas, x_hat_adv = self.forward(x)
 
         # clas
-        loss_bin_clas, preds_bin_clas, probs_bin_clas = self._step(logits_bin_clas, targets_bin_clas, self.criterion_clas)
+        loss_bin_clas, preds_bin_clas, probs_bin_clas = self._step(x_hat_clas, y_clas, self.criterion_clas)
 
         # adv
-        loss_adv, preds_adv, probs_adv = self._step(logits_adv, targets_adv, self.criterion_adv)
+        loss_adv, preds_adv, probs_adv = self._step(x_hat_adv, y_adv, self.criterion_adv)
 
         total_loss = loss_bin_clas + self.hparams.lambda_adv * loss_adv
 
         out_dict = {
             "loss": total_loss,
             "loss_bin_clas": loss_bin_clas,
-            "logits_bin_clas": logits_bin_clas,
-            "targets_bin_clas": targets_bin_clas,
+            "logits_bin_clas": x_hat_clas,
+            "targets_bin_clas": y_clas,
             "preds_bin_clas": preds_bin_clas,
             "probs_bin_clas": probs_bin_clas,
         }
         out_dict |= {
             "loss_adv": loss_adv,
-            "logits_adv": logits_adv,
-            "targets_adv": targets_adv,
+            "logits_adv": x_hat_adv,
+            "targets_adv": y_adv,
             "preds_adv": preds_adv,
             "probs_adv": probs_adv,
         }
@@ -94,12 +93,12 @@ class LitModuleClasAdversarial(LightningModule):
         return self.step(batch, "test")
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        x, y, *args = batch
-        x = self.forward(x)
+        x, y_clas, y_adv, *args = batch
+        x_hat_clas, x_hat_adv = self.forward(x)
 
         return {
-            "x": {"clas": x[0], "adv": x[1]},
-            "y": {"clas": y} if y.dim() == 1 else {"clas": y[:, 0], "adv": y[:, 1]},
+            "x": {"clas": x_hat_clas, "adv": x_hat_adv},
+            "y": {"clas": y_clas, "adv": y_adv},
         }
 
     def predict_epoch_end(self, outputs: List[Any]):

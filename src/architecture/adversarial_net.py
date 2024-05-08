@@ -16,8 +16,8 @@ class AdversarialNet(LightningModule):
             BagSelfAttentionModule(),
             BagAggregationModule(),
         )
-        self.clas_head = ClassificationTargetModule()
-        self.adv_head = nn.Sequential(AdversarialModule(), ClassificationTargetModule())
+        self.clas_head = ClassificationTargetModule(num_classes=2)
+        self.adv_head = nn.Sequential(AdversarialModule(), ClassificationTargetModule(num_classes=3))
 
     def forward(self, x):
         shared = self.shared(x)
