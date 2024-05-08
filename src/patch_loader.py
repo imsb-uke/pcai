@@ -1,5 +1,5 @@
 import os
-# import matplotlib.patches as mpatches
+
 import matplotlib.pyplot as plt
 import numpy as np
 import openslide
@@ -13,7 +13,6 @@ class OpenslidePatchLoader:
         patch_size: int,
         channel_is_first_axis: bool = True,
         downsample_rate: int = 1,
-        # show_progress: bool = False,
     ):
 
         self.filepath = filepath
@@ -108,7 +107,6 @@ class OpenslidePatchLoader:
         tn_downsample_rate=16,
         every_k_coordinates=2,
         ax=None,
-        axin=None,
         labeltop=True,
         labelright=True,
         draw_grid=True,

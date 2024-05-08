@@ -25,6 +25,7 @@ class LitModuleClasAdversarial(LightningModule):
 
     def __init__(
         self,
+        lr=1e-3,
         lambda_adv: float = 0.5,
     ):
         super().__init__()
@@ -54,7 +55,7 @@ class LitModuleClasAdversarial(LightningModule):
         return loss, preds, probs
 
     def step(self, batch: Any, mode: str):
-        x, y_clas, y_adv, *args = batch
+        x, y_clas, y_adv, data_meta = batch
 
         x_hat_clas, x_hat_adv = self.forward(x)
 
@@ -81,7 +82,7 @@ class LitModuleClasAdversarial(LightningModule):
             "preds_adv": preds_adv,
             "probs_adv": probs_adv,
         }
-        return out_dict
+        return out_dict | data_meta
 
     def training_step(self, batch: Any, batch_idx: int):
         return self.step(batch, "train")
@@ -93,19 +94,16 @@ class LitModuleClasAdversarial(LightningModule):
         return self.step(batch, "test")
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        x, y_clas, y_adv, *args = batch
+        x, y_clas, y_adv, data_meta = batch
         x_hat_clas, x_hat_adv = self.forward(x)
 
         return {
             "x": {"clas": x_hat_clas, "adv": x_hat_adv},
             "y": {"clas": y_clas, "adv": y_adv},
-        }
-
-    def predict_epoch_end(self, outputs: List[Any]):
-        return utils.output_collate(outputs)
+        } | data_meta
 
     def configure_optimizers(self):
-        optimizer = Adam(params=self.parameters(), lr=1e-3)
+        optimizer = Adam(params=self.parameters(), lr=self.hparams.lr)
 
         out_dict = {"optimizer": optimizer}
 
