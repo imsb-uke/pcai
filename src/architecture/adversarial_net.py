@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from collections import OrderedDict
 
 from pytorch_lightning import LightningModule
 
@@ -11,14 +12,11 @@ class AdversarialNet(LightningModule):
     ):
         super().__init__()
 
-        self.shared = nn.Sequential(
-            BagCnnEncoderModule(),
-            BagSelfAttentionModule(),
-            BagAggregationModule(),
-        )
-        self.clas_head = ClassificationTargetModule(num_classes=2)
-        self.adv_head = nn.Sequential(AdversarialModule(), ClassificationTargetModule(num_classes=3))
+        self.shared_part = nn.Sequential(OrderedDict([("encoder", BagCnnEncoderModule()), ("self_attention", BagSelfAttentionModule()), ("aggregation", BagAggregationModule())]))
+
+        self.clas_part = nn.Sequential(OrderedDict([("clas_head", ClassificationTargetModule(num_classes=2))]))
+        self.adv_part = nn.Sequential(OrderedDict([("gradient_reverse", AdversarialModule()), ("adv_head", ClassificationTargetModule(num_classes=3))]))
 
     def forward(self, x):
-        shared = self.shared(x)
-        return self.clas_head(shared), self.adv_head(shared)
+        shared = self.shared_part(x)
+        return self.clas_part(shared), self.adv_part(shared)

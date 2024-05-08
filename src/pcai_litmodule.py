@@ -63,14 +63,6 @@ class LitModuleClasAdversarial(LightningModule):
 
     def forward(self, x: torch.Tensor):
         return self.net(x)
-
-    def _step(self, x_hat, y, criterion):
-        loss = criterion(x_hat, y)
-
-        preds = torch.argmax(x_hat, dim=1)
-        probs = torch.softmax(x_hat, dim=1)
-
-        return loss, preds, probs
     
     def _log_metrics(self, mode: str, head: str, loss, probs, targets):
         self.metrics[f"{mode}_loss_{head}"](loss)
@@ -83,6 +75,14 @@ class LitModuleClasAdversarial(LightningModule):
                 on_epoch=True,
                 prog_bar=True,
             )
+
+    def _step(self, x_hat, y, criterion):
+        loss = criterion(x_hat, y)
+
+        preds = torch.argmax(x_hat, dim=1)
+        probs = torch.softmax(x_hat, dim=1)
+
+        return loss, preds, probs
 
     def step(self, batch: Any, mode: str):
         x, y_clas, y_adv, data_meta = batch
