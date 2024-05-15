@@ -159,4 +159,14 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# avoid lightning logs in repo
 lightning_logs
+
+# avoid most panda images, only those starting with 00 are kept
+data/panda/images/*
+!data/panda/images/00*
+data/panda/masks/*
+!data/panda/masks/00*
+data/panda/masks_prep/*
+!data/panda/masks_prep/00*
+
