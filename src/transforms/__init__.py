@@ -1,2 +1,2 @@
-from .image_transforms import ImageTransformsAugMix
+from .image_transforms import ImageTransformsAugMix, ImageTransforms
 from .label_transforms import LabelTransformsClas, LabelTransformsDomain

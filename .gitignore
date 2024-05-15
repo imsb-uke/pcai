@@ -170,3 +170,4 @@ data/panda/masks/*
 data/panda/masks_prep/*
 !data/panda/masks_prep/00*
 
+notebook/cancer_indicator/overview/*

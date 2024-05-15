@@ -1,1 +1,2 @@
 from .adversarial_net import AdversarialNet
+from .cancer_indicator_net import get_cancer_indicator_net
