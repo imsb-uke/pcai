@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import openslide
 from openslide import deepzoom
+from wurlitzer import pipes
 
 
 class OpenslidePatchLoader:
@@ -31,13 +32,15 @@ class OpenslidePatchLoader:
 
         # also save filename as attribute
         self.filename = os.path.split(self.filepath)[1]
-        self.slide = openslide.OpenSlide(self.filepath)
-        self.dzg = deepzoom.DeepZoomGenerator(
-            osr=self.slide,
-            tile_size=self.patch_size,
-            overlap=0,
-            limit_bounds=False,
-        )
+
+        with pipes(bufsize=0):
+            self.slide = openslide.OpenSlide(self.filepath)
+            self.dzg = deepzoom.DeepZoomGenerator(
+                osr=self.slide,
+                tile_size=self.patch_size,
+                overlap=0,
+                limit_bounds=False,
+            )
 
         self.dzg_level = self.dzg.level_count - 1 - int(np.log2(self.downsample_rate))
         self.n_channels = np.array(self.dzg.get_tile(self.dzg_level, (0, 0))).shape[2]

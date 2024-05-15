@@ -11,3 +11,9 @@ timm==0.9.2
 # --- Data Loading ---
 openslide-python==1.2.0          # for reading whole slide images
 opencv-python-headless 
+
+# --- Misc. ---
+wurlitzer==3.0.3
+tqdm
+rich
+ipywidgets==7.7.2         # for jupyter notebook widgets
