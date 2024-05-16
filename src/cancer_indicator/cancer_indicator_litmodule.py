@@ -10,6 +10,8 @@ from torch.optim.lr_scheduler import _LRScheduler
 from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification import MulticlassAUROC, MulticlassF1Score
 from torchmetrics.classification.accuracy import MulticlassAccuracy
+from torch.nn.functional import softmax
+
 
 from src import utils
 
@@ -174,7 +176,8 @@ class CancerIndicatorLitModule(LightningModule):
         return {"x": x, "y": y} | self._get_meta(args)
 
     def predict_epoch_end(self, outputs: List[Any]):
-        return utils.output_collate(outputs)
+        result = utils.output_collate(outputs)
+        return result
 
     def configure_optimizers(self):
         """Choose what optimizers and learning-rate schedulers to use in your optimization.
@@ -226,6 +229,17 @@ class CancerIndicatorLitModule(LightningModule):
             tmp[f"prob_cls_{i}"] = [p[i].item() for p in probs]
         predictions["x"] = tmp
         return predictions
+
+    @staticmethod
+    def get_predictions_df(predictions):
+        result = []
+        for pred in predictions:
+            tmp_result = pd.DataFrame(pred['data_meta']['patch_info'])
+            tmp_result['prediction'] = softmax(pred['x'], dim=1)[:, 1]
+            tmp_result['label'] = pred['y']
+            result.append(tmp_result)
+
+        return pd.concat(result)        
 
 
 def get_class_weights(label_df: pd.DataFrame) -> pd.Series:

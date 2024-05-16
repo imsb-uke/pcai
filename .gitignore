@@ -160,7 +160,9 @@ cython_debug/
 #.idea/
 
 # avoid lightning logs in repo
-lightning_logs
+**/lightning_logs/*
+
+!notebook/cancer_indicator/lightning_logs/best/checkpoints/*.ckpt
 
 # avoid most panda images, only those starting with 00 are kept
 data/panda/images/*
