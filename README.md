@@ -63,7 +63,7 @@ The [01_patch_extraction.ipynb](notebook/cancer_indicator/01_patch_extraction.ip
 
 ### Model Training
 
-In [02_training.ipynb](notebook/cancer_indicator/02_training.ipynb), a cancer indicator model is trained and evaluated on a few exemplary slides. The resulting model provides patch-level predictions for individual patches as shown below.
+In [02_training.ipynb](notebook/cancer_indicator/02_training.ipynb), a cancer indicator model is trained and evaluated on a few exemplary slides. The resulting model provides patch-level predictions for individual patches as shown below. Note that the results are derived from a model that only uses 24 input images for training.
 
 <figure class="image">
     <img src="notebook/cancer_indicator/output/ci_prediction_examples.png">
