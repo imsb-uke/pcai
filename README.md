@@ -1,4 +1,4 @@
-# Proste Cancer Aggressiveness Index (PCAI)
+# Prostate Cancer Aggressiveness Index (PCAI)
 This repository includes the main building blocks of PCAI. Since it is based on tissue microarray (TMA) spots of real patients, the original dataset is not included and replaced by a [toy dataset](data/tma_dataset/). 
 
 ## How to run
