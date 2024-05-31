@@ -73,6 +73,12 @@ In [02_training.ipynb](notebook/cancer_indicator/02_training.ipynb), a cancer in
 ## PCAI
 This part presents some notebooks on how to utilize the PCAI code
 
+<figure class="image">
+    <img src="PCAI_architecture.png">
+    <figcaption>Schematic of the deep learning models. A: The BASE model, trained and validated on a single data domain (UKE.first). Images are fed as bag of patches through the CNN-based feature extractor (FE), cross-correlated in the self-attention layer (SA) and aggregated in the patch aggregation layer (PA), before the risk classification head (RC) assigns the final risk score. B: Extension for domain adversarial (DA) training on the three data domains UKE.first, UKE.second and UKE.scanner and validation on all UKEhv sub-datasets. The domain discriminator (DD) and the gradient reversal layer (GRL) are attached for dual task training. C: Schematic of the full PCAI pipline, which combines the trained DA model with cancer indicator (CI) based patch selection, credibility estimation (CE) and credibility-guided color adaptation (CA) during inference.</figcaption>
+</figure>
+
+
 ### Masking
 TODO
 
