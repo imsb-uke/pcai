@@ -85,9 +85,8 @@ class LitModuleClasAdversarial(LightningModule):
         return loss, preds, probs
 
     def step(self, batch: Any, mode: str):
-        x, y_clas, y_adv, *args = batch
-
-        x_hat_clas, x_hat_adv = self.forward(x)
+        x, y_clas, y_adv, data_meta = batch
+        x_hat_clas, x_hat_adv, features = self.forward(x)
 
         # clas
         loss_clas, preds_clas, probs_clas = self._step(x_hat_clas, y_clas, self.criterion_clas)
@@ -126,7 +125,8 @@ class LitModuleClasAdversarial(LightningModule):
             "preds_adv": preds_adv,
             "probs_adv": probs_adv,
         }
-        return out_dict | self._get_meta(args)
+
+        return out_dict | {"data_meta": data_meta} | {"model_meta": {"features": features.detach()}}
 
     def training_step(self, batch: Any, batch_idx: int):
         return self.step(batch, "train")
@@ -138,24 +138,13 @@ class LitModuleClasAdversarial(LightningModule):
         return self.step(batch, "test")
     
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        x, y_clas, y_adv, *args = batch
-        x_hat_clas, x_hat_adv = self.forward(x)
+        x, y_clas, y_adv, data_meta = batch
+        x_hat_clas, x_hat_adv, features = self.forward(x)
 
         return {
             "x": {"clas": x_hat_clas, "adv": x_hat_adv},
             "y": {"clas": y_clas, "adv": y_adv},
-        } | self._get_meta(args)
-    
-    def _get_meta(self, data_args):
-        """Called after the forward pass of the network."""
-        meta = {}
-        if len(data_args) > 0:
-            data_meta = data_args[0]
-            meta["data_meta"] = data_meta
-        if hasattr(self.net, "get_meta"):
-            model_meta = self.net.get_meta()
-            meta["model_meta"] = model_meta
-        return meta
+        } | {"data_meta": data_meta} | {"model_meta": {"features": features.detach()}}
 
     def configure_optimizers(self):
         optimizer = Adam(params=self.parameters(), lr=self.hparams.lr)

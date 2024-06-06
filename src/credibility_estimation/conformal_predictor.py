@@ -92,7 +92,7 @@ class ConformalPredictor:
         self.target_data.obs["confidence"] = confidence
         self.target_data.obs["credibility"] = credibility
 
-    def force_predict_class_rate(self, threshold=0.8, on="confidence"):
+    def force_predict_class_rate(self, threshold=0.75, on="credibility"):
 
         ncal_ngt_neq = self._get_ncal_ngt_neq(
             self.X_calib, self.probs_calib, self.normalizer_errors_calib
@@ -181,17 +181,16 @@ class ConformalPredictor:
     def input_transform(
         preds_base,
         preds_targ,
-        target_key,
-        features_key,
-        split_key,
-        domain_key_base,
-        domain_key_target,
-        prob_clas_0_key,
-        prob_clas_1_key,
-        target_cfg,
-        train_cfg,
-        calib_cfg,
-        seed=42,
+        target_key = "y|clas",
+        features_key = "model_meta|features",
+        split_key = "data_meta|split",
+        domain_key_base = "data_meta|domain",
+        domain_key_target = "data_meta|domain",
+        prob_clas_0_key = "x|clas|prob_cls_0",
+        prob_clas_1_key = "x|clas|prob_cls_1",
+        train_domains: List[str] = None,
+        calib_domains: List[str] = None,
+        target_domains: List[str] = None,
     ):
         """Transform PCAI model predictions into adata object for conformal prediction."""
 
@@ -217,10 +216,9 @@ class ConformalPredictor:
         return ConformalPredictor._split_data(
             data_base,
             data_targ,
-            target_cfg=target_cfg,
-            train_cfg=train_cfg,
-            calib_cfg=calib_cfg,
-            seed=seed,
+            train_domains = train_domains,
+            calib_domains = calib_domains,
+            target_domains = target_domains,
         )
 
     @staticmethod
@@ -262,48 +260,14 @@ class ConformalPredictor:
     def _split_data(
         data_base,
         data_targ,
-        target_cfg,
-        train_cfg,
-        calib_cfg,
-        seed=42,
+        train_domains: List[str] = None,
+        calib_domains: List[str] = None,
+        target_domains: List[str] = None,
     ):
-        # combine and split data into train, calib and target
-        target_data = ConformalPredictor._get_split_from_cfg(data_targ, target_cfg)
-        train_data = ConformalPredictor._get_split_from_cfg(data_base, train_cfg)
-
-        calib_data_list = []
-
-        # Take calibration data from train set
-        if (calib_size := train_cfg.get("calib_size", None)) not in (0, None):
-            print(f"Using {calib_size * 100:.1f}% of train set as calibration set.")
-            train_data, train_calib_data = train_test_split(
-                train_data,
-                test_size=calib_size,
-                random_state=seed,
-                stratify=train_data.obs[
-                    ["domain", "target"] if "domain" in train_data.obs.columns else ["target"]
-                ],
-            )
-            calib_data_list.append(train_calib_data)
-
-        # Take calibration data from target set calibration
-        if (calib_size := target_cfg.get("calib_size", None)) not in (0, None):
-            print(f"Using {calib_size * 100:.1f}% of target set as calibration set.")
-            target_data, target_calib_data = train_test_split(
-                target_data,
-                test_size=calib_size,
-                random_state=seed,
-                stratify=target_data.obs[
-                    ["domain", "target"] if "domain" in target_data.obs.columns else ["target"]
-                ],
-            )
-            calib_data_list.append(target_calib_data)
-
-        # Concatenate calib_data_list or use an alternative method
-        if calib_data_list:
-            calib_data = ad.concat(calib_data_list)
-        else:
-            calib_data = ConformalPredictor._get_split_from_cfg(data_base, calib_cfg)
+        
+        train_data = ConformalPredictor._get_split_data(data_base, "train", train_domains)
+        calib_data = ConformalPredictor._get_split_data(data_base, "val", calib_domains)
+        target_data = ConformalPredictor._get_split_data(data_targ, "test", target_domains)
 
         print(
             f"Created CP data with {train_data.shape[0]} train, {calib_data.shape[0]} calib and {target_data.shape[0]} target samples."
@@ -316,10 +280,10 @@ class ConformalPredictor:
         return ad.concat([train_data, calib_data, target_data], join="inner", axis=0)
 
     @staticmethod
-    def _get_split_from_cfg(data, split_cfg):
-        data_out = data[data.obs["split"].isin(split_cfg["splits"])]
-        if split_cfg["domains"] is not None:
-            data_out = data_out[data_out.obs["domain"].isin(split_cfg["domains"])]
+    def _get_split_data(data, split, domains):
+        data_out = data[data.obs["split"] == split]
+        if domains is not None:
+            data_out = data_out[data_out.obs["domain"].isin(domains)]
         return data_out
 
     @staticmethod

@@ -72,7 +72,7 @@ def get_printlogger(name=__name__) -> logging.Logger:
     return get_pylogger(name)
 
 
-# transformation of model predictions
+# collate batch wise model outputs
 
 def output_collate(
     outputs: List[Any], ignore_keys: List[str] = ["loss", "loss_bin_clas", "loss_adv"]
@@ -120,7 +120,17 @@ def _recursive_dict_flatten_lists(d):
             raise ValueError(f"{v} should be of type 'dict' or 'list' but is {type(v)}")
     return d
 
-def process_logits(predictions):
+
+# transform collated output dict to scalar dataframe and nonscalar dict
+
+def transform_collated_output(output):
+    output = _process_logits(output)
+    output = _flatten_dict_keys(output)
+    output = _separate_tensors(output)
+    return _to_out_dict(output)
+
+
+def _process_logits(predictions):
     tmp = {}
     for head, v in predictions["x"].items():
         tmp[head] = {}
@@ -132,11 +142,6 @@ def process_logits(predictions):
             tmp[head][f"prob_cls_{i}"] = [p[i].item() for p in probs]
     predictions["x"] = tmp
     return predictions
-
-def transform_output_dict(output):
-    output = _flatten_dict_keys(output)
-    output = _separate_tensors(output)
-    return _to_out_dict(output)
 
 
 def _flatten_dict_keys(dictionary, parent_key="", separator="|"):

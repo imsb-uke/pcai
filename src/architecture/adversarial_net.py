@@ -19,4 +19,5 @@ class AdversarialNet(LightningModule):
 
     def forward(self, x):
         shared = self.shared_part(x)
-        return self.clas_part(shared), self.adv_part(shared)
+        return self.clas_part(shared), self.adv_part(shared), shared
+    
