@@ -76,11 +76,12 @@ class PatchDataModule(LightningDataModule):
             .assign(filepath=lambda df_: df_['sample_id'].apply(lambda x: f"{x}.tif"))
         )
 
+        # workaround: all samples are train, val and test
         self.metadata_df = pd.concat(
             [
-                self.metadata_df.assign(split="train"),
-                self.metadata_df.assign(split="val"),
-                self.metadata_df.assign(split="test"),
+                self.metadata_df.assign(split="train").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_train")),
+                self.metadata_df.assign(split="val").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_val")),
+                self.metadata_df.assign(split="test").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_test")),
             ]
         )
 

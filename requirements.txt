@@ -17,3 +17,9 @@ wurlitzer==3.0.3
 tqdm
 rich
 ipywidgets==7.7.2         # for jupyter notebook widgets
+
+# --------- conformal --------- #
+anndata
+
+# --------- color adaptation --------- #
+pyclustering
