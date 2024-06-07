@@ -97,7 +97,7 @@ As demonstrated in [02_patch_loader.ipynb](notebook/02_patch_loader.ipynb), the 
     <img src="imgs/mahalanobis_distance_example.png">
 </figure>
 
-[06_credibility_estimation.ipynb](notebook/06_credibility_estimation.ipynb) shows how to estimate the credibility of the PCAI model predictions. The credibility is estimated based on the Mahalanobis distance of the latent feature vectors of the aggregated patches per bag to the center of training samples using a conformal prediction setup.
+[06_credibility_estimation.ipynb](notebook/06_credibility_estimation.ipynb) shows how to estimate the credibility of the PCAI model predictions. The credibility score is based on the Mahalanobis distance of the latent feature vectors of the aggregated patches per bag to the center of training samples using a conformal prediction setup.
 
 ### 7 - Color Adaptation
 
