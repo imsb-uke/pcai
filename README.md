@@ -50,12 +50,14 @@ This part presents some notebooks on how to utilize the PCAI code
       <td>
         <figure class="image">
             <img src="data/tma_dataset/masks/pngs/1.tif_thumbnail.png">
+            <br>
             <figcaption>Original spot image thumbnail.</figcaption>
         </figure>
       </td>
       <td>
         <figure class="image">
             <img src="data/tma_dataset/masks/pngs/1.tif_tissue_raw.png">
+            <br>
             <figcaption>Corresponding tissue mask.</figcaption>
         </figure>
       </td>
