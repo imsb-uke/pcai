@@ -62,6 +62,25 @@ class PatchDataModule(LightningDataModule):
         self.label_transforms_clas = LabelTransformsClas(cutoff_months=60)
         self.label_transforms_domain = LabelTransformsDomain(domain_mapping={'A': 0, 'B': 1, 'C': 2})
 
+    @staticmethod
+    def _load_metadata_df(metadata_path) -> pd.DataFrame:
+        metadata_df = (
+            pd.read_csv(metadata_path)
+            # sample id describes the bag level information
+            .assign(sample_id=lambda df_: df_['patient_id'])
+            .assign(filepath=lambda df_: df_['sample_id'].apply(lambda x: f"{x}.tif"))
+        )
+
+        # workaround: all samples are train, val and test
+        metadata_df = pd.concat(
+            [
+                metadata_df.assign(split="train").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_train")),
+                metadata_df.assign(split="val").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_val")),
+                metadata_df.assign(split="test").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_test")),
+            ]
+        )
+        return metadata_df
+
     def setup(self, stage: Optional[str] = None):
         """Load data. Set variables: `train_dataset`, `val_dataset`, `test_dataset`.
 
@@ -69,21 +88,7 @@ class PatchDataModule(LightningDataModule):
         careful not to execute things like random split twice!
         """
 
-        self.metadata_df = (
-            pd.read_csv(self.hparams.metadata_path)
-            # sample id describes the bag level information
-            .assign(sample_id=lambda df_: df_['patient_id'])
-            .assign(filepath=lambda df_: df_['sample_id'].apply(lambda x: f"{x}.tif"))
-        )
-
-        # workaround: all samples are train, val and test
-        self.metadata_df = pd.concat(
-            [
-                self.metadata_df.assign(split="train").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_train")),
-                self.metadata_df.assign(split="val").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_val")),
-                self.metadata_df.assign(split="test").assign(sample_id=lambda df_: df_["sample_id"].apply(lambda x: f"{x}_test")),
-            ]
-        )
+        self.metadata_df = self._load_metadata_df(self.hparams.metadata_path)
 
         # load PatchDatasets
         if stage == "fit" and not self.train_dataset and not self.val_dataset:
