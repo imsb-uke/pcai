@@ -81,7 +81,7 @@ class PatchColorAdaptDataModule(PatchDataModule):
 
         # optional when using different datasets for fit and predict
         if self.hparams.histograms_path_fit is not None:
-            # add histograms from different experiment data
+            # add histograms from different dataset
             _hist_data_fit = self._get_hist_data(self.hparams.histograms_path_fit)
             # remove samples from metadata_df_fit that are not in _hist_data_fit (no masks during histogram creation)
             self.metadata_df_fit = self.metadata_df_fit.loc[
@@ -196,7 +196,6 @@ class PatchColorAdaptDataModule(PatchDataModule):
                 cv2.COLOR_RGB2HSV,
             )
 
-            # TODO: "H" channel only has 180 bins, not 256
             for i, c in enumerate(channels):
                 histograms[c][meta_dict["sample_id"][0]] = cv2.calcHist(
                     [hsv_arr], [i], None, [256], [0, 256]
