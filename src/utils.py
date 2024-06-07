@@ -9,7 +9,7 @@ import logging
 from collections.abc import MutableMapping
 from copy import deepcopy
 from itertools import chain
-from typing import Any, Dict, List
+from typing import Any, List
 
 import pandas as pd
 import torch

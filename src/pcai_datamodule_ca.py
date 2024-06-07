@@ -1,5 +1,5 @@
 import pickle
-from typing import Dict, List, Optional
+from typing import Optional
 
 import cv2
 import pandas as pd

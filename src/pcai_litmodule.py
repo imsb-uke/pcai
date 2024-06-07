@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 import torch
 
@@ -8,10 +8,8 @@ from pytorch_lightning import LightningModule
 
 from src.architecture import AdversarialNet
 
-from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics.classification import (
-    MulticlassAUROC,
-)
+from torchmetrics import MeanMetric
+from torchmetrics.classification import MulticlassAUROC
 
 
 class LitModuleClasAdversarial(LightningModule):
