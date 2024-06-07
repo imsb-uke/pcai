@@ -153,3 +153,36 @@ class PatchDataset(Dataset):
         patch_bag = patch_loader.get_patches(coords=patch_info_df[["row", "col"]].values)
 
         return patch_bag, patch_loader.max_rows, patch_loader.max_cols
+    
+
+
+class PatchColorAdaptDataset(PatchDataset):
+    def __init__(
+        self,
+        hist_matcher,
+        **mmpd_kwargs,
+    ):
+        super().__init__(**mmpd_kwargs)
+
+        self.hist_matcher = hist_matcher
+
+    def __getitem__(self, idx: int) -> torch.Tensor:
+        sample_id = self.sample_ids[idx]
+
+        patch_bag, label_clas, label_domain, meta_dict = self.get_sample(sample_id)
+
+        # color adaptation
+        if meta_dict["assignment"] == 0:
+            patch_bag, _ = self.hist_matcher.match_histograms(patch_bag, sample_id)
+
+        if self.image_transforms is not None:
+            patch_bag = self.image_transforms(patch_bag)
+
+        if self.label_transforms_clas is not None:
+            label_clas = self.label_transforms_clas(label_clas)
+
+        if self.label_transforms_domain is not None:
+            label_domain = self.label_transforms_domain(label_domain)
+
+        return patch_bag, label_clas, label_domain, meta_dict
+    
