@@ -70,7 +70,7 @@ This part presents some notebooks on how to utilize the PCAI code
     <img src="imgs/patching.png">
 </figure>
 
-As demonstrated in [02_patch_loader.ipynb](notebook/02_patch_loader.ipynb), the patch loaded based on [Openslide](https://openslide.org/api/python/) allows patch-wise extraction of individual patches from whole slide images. An example is shown below where four individual patches are illustrated along with an overall toy "slide":
+As demonstrated in [02_patch_loader.ipynb](notebook/02_patch_loader.ipynb), an [Openslide](https://openslide.org/api/python/)-based approach allows patch-wise extraction of individual patches from whole slide images. An example is shown below where four individual patches are illustrated along with an overall toy "slide":
 
 <figure class="image">
     <img src="notebook/output/patch_loader_example.png">
